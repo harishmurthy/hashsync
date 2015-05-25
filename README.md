@@ -12,3 +12,14 @@ Any time something changed, run syncup.py <changed file> <remote json file>. Thi
 On remote system, run filup.py <patch file> to incorporate changes.
 
 Currently the JSON files will have to be manually exchanged between systems. But have plan to include as well.
+
+INSTALL:
+
+Clone the repo:
+  git clone https://github.com/harishmurthy/hashsync.git
+
+Install virtualenv if you haven't already, then:
+  virtualenv hashsync
+  cd hashsync && bin/activate
+  pip install -r requirements.txt
+
