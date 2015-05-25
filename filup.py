@@ -25,6 +25,14 @@ def apply(jfile):
     for wx in diffs:
       of.write(unhexlify(patch[wx]))
   move(outfile,patch['file'])
+  tfile = patch['file'] + '.json'
+  with open(tfile,'r') as t:
+    oldjson = json.load(t)
+  for rx in patch['diff']:
+    oldjson['line'+str(rx)] = patch['line'+str(rx)]
+  oldjson['topdigest'] = patch['topdigest']
+  with open(tfile,'w') as t:
+    json.dump(oldjson,t,indent=1)
 
 if __name__ == "__main__":
   import argparse
