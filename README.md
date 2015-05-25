@@ -20,6 +20,6 @@ Clone the repo:
 
 Install virtualenv if you haven't already, then:
   virtualenv hashsync
-  cd hashsync && bin/activate
-  pip install -r requirements.txt
+  cd hashsync
+  bin/pip install -r requirements.txt
 

@@ -20,6 +20,7 @@ def cmp():
   with open(args.dsttree,'r') as f:
     ld2 = json.load(f)
     ld2.pop('topdigest')
+    dfile = ld2.pop('file')
   mt1 = hashtree.buildtree(ld1)
   mt2 = hashtree.buildtree(ld2)
   if mt1.digest != mt2.digest:
@@ -31,13 +32,14 @@ def cmp():
     if args.patchfile:
       with open(args.patchfile,'w') as f:
         patch = {}
-        patch['file'] = args.dsttree[:-5]
+        patch['file'] = dfile
         patch['topdigest'] = hexlify(mt1.digest)
         patch['diff'] = [x[4:] for x in l]
         for x in l:
           patch[x[4:]] = content[x[4:]]
           patch[x] = ld1[x]
         json.dump(patch,f,indent=1)
+        print('patch written to ' + args.patchfile)
   else:
     print('files identical')
 

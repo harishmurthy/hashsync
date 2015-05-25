@@ -1,5 +1,8 @@
 #! bin/python
 
+import argparse
+import json
+from merkle import text_merkle_tree
 from binascii import unhexlify,hexlify
 from collections import deque
 from hashlib import md5
@@ -54,24 +57,25 @@ def buildtree(leafdict):
     ml.append(TreeNode(chunkid=x,digest=unhexlify(leafdict[x])))
   if len(ml) % 2:
     t = ml.popleft()
-    ml.append(TreeNode(right=t,digest=t.digest,chunkid=[t.chunkid]))
+    ml.append(TreeNode(right=t,digest=t.digest))
   while len(ml) > 1:
     l = ml.popleft()
     r = ml.popleft()
-    ml.append(TreeNode(left=l,right=r,chunkid=[l.chunkid,r.chunkid],digest=md5(l.digest + r.digest).digest()))
+    ml.append(TreeNode(left=l,right=r,digest=md5(l.digest + r.digest).digest()))
   return ml.pop()
 
+def hashtreeify(infile):
+  ld = text_merkle_tree(infile)
+  mt = buildtree(ld)
+  ld['topdigest'] = hexlify(mt.digest)
+  ld['file'] = infile
+  return ld
+
 if __name__ == "__main__":
-  import argparse
-  import merkle
-  import json
-  import binascii
   parser = argparse.ArgumentParser()
   parser.add_argument("file", help="File for which hash tree is needed")
+  parser.add_argument("outfile", help="Output File containing hash tree")
   args = parser.parse_args()
-  ld = merkle.text_merkle_tree(args.file)
-  mt = buildtree(ld)
-  ld['topdigest'] = binascii.hexlify(mt.digest)
-  ofile = args.file + '.json'
-  with open(ofile,'w') as f:
+  ld = hashtreeify(args.file)
+  with open(args.outfile,'w') as f:
     json.dump(ld,f,indent=1)

@@ -5,9 +5,7 @@ from binascii import unhexlify
 from collections import deque
 from shutil import move
 
-def apply(jfile):
-  with open(jfile,'r') as j:
-    patch = json.load(j)
+def apply(patch):
   if not 'file' in patch:
     print("Error: Invalid patch file given, no file param present")
     return
@@ -25,6 +23,11 @@ def apply(jfile):
     for wx in diffs:
       of.write(unhexlify(patch[wx]))
   move(outfile,patch['file'])
+
+def updatetree(patch):
+  if not 'file' in patch:
+    print("Error: Invalid patch file given, no file param present")
+    return
   tfile = patch['file'] + '.json'
   with open(tfile,'r') as t:
     oldjson = json.load(t)
@@ -39,4 +42,7 @@ if __name__ == "__main__":
   parser = argparse.ArgumentParser()
   parser.add_argument("jfile", help="Patch JSON file")
   args = parser.parse_args()
-  apply(args.jfile)
+  with open(args.jfile,'r') as j:
+    patch = json.load(j)
+    apply(patch)
+    updatetree(patch)
